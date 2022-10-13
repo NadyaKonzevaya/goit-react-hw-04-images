@@ -1,32 +1,48 @@
-import { Component } from "react";
+import { useState } from "react";
 import { toast } from 'react-toastify';
 import styles from "./styles.module.css";
 
 
-class SearchBar extends Component {
-    state = {
-        searchQuery: "",
-    };
+// class SearchBar extends Component {
+//     state = {
+//         searchQuery: "",
+//     };
 
-    handleChange = e => {
-        this.setState({ searchQuery: e.currentTarget.value.toLowerCase() });
+function SearchBar({onSubmit}) {
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleChange = e => {
+        setSearchQuery(e.currentTarget.value.toLowerCase());
     }
+    // handleChange = e => {
+    //     this.setState({ searchQuery: e.currentTarget.value.toLowerCase() });
+    // }
 
-    handleSubmit = e => {
+    const handleSubmit = e => {
         e.preventDefault();
 
-        if (this.state.searchQuery.trim() === "") {
+        if (searchQuery.trim() === "") {
             toast.error("Введите валидное слово.");
             return;
         }
-        this.props.onSubmit(this.state.searchQuery);
-        this.setState({ searchQuery: "" });
+       onSubmit(searchQuery);
+        setSearchQuery("");
     }
+    // handleSubmit = e => {
+    //     e.preventDefault();
 
-    render() {
+    //     if (this.state.searchQuery.trim() === "") {
+    //         toast.error("Введите валидное слово.");
+    //         return;
+    //     }
+    //     this.props.onSubmit(this.state.searchQuery);
+    //     this.setState({ searchQuery: "" });
+    // }
+
+    
         return (
         <header className={styles.Searchbar}>
-            <form className={styles.SearchForm} onSubmit={this.handleSubmit}>
+            <form className={styles.SearchForm} onSubmit={handleSubmit}>
                 <button type="submit" className={styles.SearchForm_button}>
                     <span className={styles.SearchForm_button_label}>Search</span>
                 </button>
@@ -37,14 +53,13 @@ class SearchBar extends Component {
                     autoComplete="off"
                     autoFocus
                     placeholder="Search images and photos"
-                    value={this.state.searchQuery}
-                    onChange={this.handleChange}
+                    value={searchQuery}
+                    onChange={handleChange}
 
                 />
             </form>
         </header>
     )
-    }
     
 }
 
