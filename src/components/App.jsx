@@ -15,6 +15,12 @@ const Status = {
   REJECTED: 'rejected',
 };
 
+const scrollDown = () => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+  }
 
 export function App() {
   const [page, setPage] = useState(1);
@@ -26,14 +32,6 @@ export function App() {
   const [status, setStatus] = useState(Status.IDLE);
   const [error, setError] = useState("");
 
-  // const cardRef = useRef(null);
-
-  const scrollDown = () => {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-  }
   const handleFormSubmit = searchQuery => {
     setStatus(Status.PENDING);
     setSearchQuery(searchQuery);
@@ -44,9 +42,6 @@ export function App() {
   const loadMore = () => {
     setPage(prev => prev + 1);
     setStatus(Status.PENDING);
-   
-   
-       
   };
 
   useEffect(() => {
@@ -54,8 +49,7 @@ export function App() {
       api.fetchImagesWithQuery(searchQuery, page).then(items => {
         setImages(prev => [...prev, ...items]);
         setStatus(Status.RESOLVED);
-         scrollDown();
-       
+        ;
       }).catch(error => { 
         setError(error);
         setStatus(Status.REJECTED);
@@ -63,6 +57,10 @@ export function App() {
     }
   }, [page, searchQuery, status])
     
+  useEffect(() => {
+    scrollDown()
+  }, [images])
+  
   
 
   const handleOpenModal = (largeImageUrl, tags) => {
@@ -72,19 +70,22 @@ export function App() {
   };
 
   const toggleModal = () => {
-   setShowModal(!showModal)
+  setShowModal(!showModal)
   };
-   
     return (
     <div className={styles.App} >
-      <SearchBar onSubmit={ handleFormSubmit} />
-      {status === Status.RESOLVED && <ImageGallery items={images} onClick={handleOpenModal}/>}
-     { (images.length !== 0)  && <Button onLoadMore={loadMore}/>}
-      {status === Status.PENDING && <Loader />}
-        {showModal && largeImageUrl && <Modal onClose={toggleModal}>
-          <img src={largeImageUrl} alt={tags}  />
-        </Modal>}
-    </div>
+        <SearchBar onSubmit={handleFormSubmit} />
+        
+      {/* {status === Status.RESOLVED && <ImageGallery items={images} onClick={handleOpenModal}/>} */}
+        <ImageGallery items={images} onClick={handleOpenModal} />
+        
+    { (images.length !== 0)  && <Button onLoadMore={loadMore}/>}
+     
+    {showModal && largeImageUrl && <Modal onClose={toggleModal}>
+        <img src={largeImageUrl} alt={tags}  />
+      </Modal>}
+        
+    {status === Status.PENDING && <Loader />}
+  </div>
     );
- 
 };
